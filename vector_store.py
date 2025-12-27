@@ -56,7 +56,8 @@ class VectorStore:
 
         query_embedding = query_embedding.reshape(1, -1)
 
-
+        faiss.normalize_L2(query_embedding)
+        
         distances, indices = self.index.search(query_embedding, min(top_k, self.index.ntotal))
 
         results = []

@@ -19,7 +19,7 @@ class RAGPipeline:
         self.ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
         
         # Groq configuration (fallback)
-        self.groq_api_key = os.getenv("GROQ_API_KEY", "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")
+        self.groq_api_key = os.getenv("GROQ_API_KEY", "")
         self.groq_model = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
         self.use_groq = False  # Flag to track if we're using Groq
         

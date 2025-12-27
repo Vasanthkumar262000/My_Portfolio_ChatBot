@@ -46,6 +46,7 @@ class ChatResponse(BaseModel):
     response: str
     sources: List[dict]
     model: str
+    provider: str
 
 
 class QueryRequest(BaseModel):
@@ -104,9 +105,14 @@ async def health():
     # Check if Ollama is accessible
     ollama_ok = rag_pipeline.test_ollama_connection()
     
+    # Check Groq availability
+    groq_available = bool(rag_pipeline.groq_api_key)
+    
     return {
-        "status": "healthy" if ollama_ok else "degraded",
+        "status": "healthy" if (ollama_ok or groq_available) else "degraded",
         "ollama_connected": ollama_ok,
+        "groq_configured": groq_available,
+        "current_provider": "groq" if rag_pipeline.use_groq else ("ollama" if ollama_ok else "none"),
         "vector_store_documents": vector_store.index.ntotal
     }
 
@@ -127,7 +133,8 @@ async def chat(request: ChatRequest):
         return ChatResponse(
             response=result["response"],
             sources=result["sources"],
-            model=result["model"]
+            model=result["model"],
+            provider=result["provider"] 
         )
     
     except Exception as e:
@@ -208,18 +215,21 @@ async def query_documents(request: QueryRequest):
 
 @app.get("/stats")
 async def get_stats():
-    """Get statistics about the vector store"""
     stats = vector_store.get_stats()
     return {
         **stats,
         "ollama_model": rag_pipeline.model_name,
-        "ollama_url": rag_pipeline.ollama_base_url
+        "ollama_url": rag_pipeline.ollama_base_url,
+        "ollama_available": rag_pipeline.ollama_available,
+        "groq_configured": bool(rag_pipeline.groq_api_key),
+        "groq_model": rag_pipeline.groq_model,
+        "current_provider": "groq" if rag_pipeline.use_groq else "ollama"
     }
 
 
 @app.delete("/clear")
 async def clear_vector_store():
-    """Clear all documents from the vector store"""
+
     vector_store.clear()
     return {"message": "Vector store cleared successfully"}
 
