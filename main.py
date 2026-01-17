@@ -68,9 +68,9 @@ class UploadResponse(BaseModel):
 @app.on_event("startup")
 async def startup_event():
     """Load existing vector store and test Ollama connection on startup"""
-    if os.path.exists("data/faiss_index/index.faiss"):
-        vector_store.load()
-        print("[OK] Vector store loaded from disk")
+    # Vector store is already loaded in __init__, just verify
+    stats = vector_store.get_stats()
+    print(f"[OK] Vector store ready. Documents: {stats['total_documents']}")
     
     # Test Ollama connection
     rag_pipeline.test_ollama_connection()

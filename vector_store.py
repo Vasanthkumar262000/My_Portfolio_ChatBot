@@ -105,10 +105,25 @@ class VectorStore:
     def save(self):
         """Save the FAISS index and associated data to disk."""
         try:
+            # Validate data before saving
+            if self.index.ntotal == 0:
+                print(f"[WARNING] Attempting to save empty index (0 vectors). Skipping save.")
+                return
+            
+            if len(self.texts) == 0:
+                print(f"[WARNING] Attempting to save empty texts list. Skipping save.")
+                return
+            
+            if len(self.texts) != self.index.ntotal:
+                print(f"[WARNING] Mismatch: {len(self.texts)} texts but {self.index.ntotal} vectors. Saving anyway...")
+            
             index_file = os.path.join(self.index_path, "index.faiss")
+            data_file = os.path.join(self.index_path, "data.pkl")
+            
+            # Save index
             faiss.write_index(self.index, index_file)
             
-            data_file = os.path.join(self.index_path, "data.pkl")
+            # Save data
             with open(data_file, "wb") as f:
                 pickle.dump({
                     "texts": self.texts,
@@ -116,9 +131,11 @@ class VectorStore:
                     "dimension": self.dimension
                 }, f)
             
-            print(f"Vector store saved to {self.index_path}")
+            print(f"Vector store saved to {self.index_path} ({self.index.ntotal} vectors, {len(self.texts)} texts)")
         except Exception as e:
             print(f"Error saving vector store: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def load(self):
         """Load the FAISS index and associated data from disk."""
@@ -127,20 +144,37 @@ class VectorStore:
             data_file = os.path.join(self.index_path, "data.pkl")
             
             if os.path.exists(index_file) and os.path.exists(data_file):
-                self.index = faiss.read_index(index_file)
-
+                # Read index
+                loaded_index = faiss.read_index(index_file)
+                
+                # Read data
                 with open(data_file, "rb") as f:
                     data = pickle.load(f)
-                    self.texts = data.get("texts", [])
-                    self.metadata = data.get("metadata", [])
+                    loaded_texts = data.get("texts", [])
+                    loaded_metadata = data.get("metadata", [])
                 
-                print(f"Vector store loaded from {self.index_path}. Documents: {self.index.ntotal}")
-                return True
+                # Validate loaded data
+                if loaded_index.ntotal == 0 or len(loaded_texts) == 0:
+                    print(f"[WARNING] Vector store files exist but are empty. Starting fresh.")
+                    return False
+                
+                # Only replace if we have valid data
+                if loaded_index.ntotal == len(loaded_texts):
+                    self.index = loaded_index
+                    self.texts = loaded_texts
+                    self.metadata = loaded_metadata
+                    print(f"Vector store loaded from {self.index_path}. Documents: {self.index.ntotal}")
+                    return True
+                else:
+                    print(f"[WARNING] Mismatch: {loaded_index.ntotal} vectors but {len(loaded_texts)} texts. Starting fresh.")
+                    return False
             else:
                 print("No existing vector store found. Starting fresh.")
                 return False
         except Exception as e:
             print(f"Error loading vector store: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return False
     
     def get_stats(self) -> Dict[str, Any]:
