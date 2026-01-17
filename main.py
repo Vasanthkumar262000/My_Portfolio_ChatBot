@@ -70,7 +70,7 @@ async def startup_event():
     """Load existing vector store and test Ollama connection on startup"""
     if os.path.exists("data/faiss_index/index.faiss"):
         vector_store.load()
-        print("✓ Vector store loaded from disk")
+        print("[OK] Vector store loaded from disk")
     
     # Test Ollama connection
     rag_pipeline.test_ollama_connection()

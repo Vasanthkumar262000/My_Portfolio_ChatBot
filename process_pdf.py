@@ -52,7 +52,7 @@ def main():
             print("Make sure the PDF contains text (not just images).")
             sys.exit(1)
         
-        print(f"✓ Extracted {len(chunks)} chunks from PDF\n")
+        print(f"[OK] Extracted {len(chunks)} chunks from PDF\n")
         
         # Step 3: Create metadata
         filename = os.path.basename(pdf_path)
@@ -69,7 +69,7 @@ def main():
         # Step 6: Show statistics
         stats = vector_store.get_stats()
         print("\n" + "=" * 60)
-        print("✓ Processing Complete!")
+        print("[OK] Processing Complete!")
         print("=" * 60)
         print(f"Total documents in vector store: {stats['total_documents']}")
         print(f"Embedding dimension: {stats['embedding_dimension']}")
@@ -79,7 +79,7 @@ def main():
         print("=" * 60)
     
     except Exception as e:
-        print(f"\n✗ Error: {str(e)}")
+        print(f"\n[ERROR] Error: {str(e)}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

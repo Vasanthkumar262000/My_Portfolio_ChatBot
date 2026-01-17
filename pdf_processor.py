@@ -1,9 +1,15 @@
 """
-PDF Processor - Extracts text from PDF and creates chunks for RAG
+Document Processor - Extracts text from PDF and DOCX files and creates chunks for RAG
 """
 import os
 from typing import List
 from PyPDF2 import PdfReader
+
+try:
+    from docx import Document
+    DOCX_AVAILABLE = True
+except ImportError:
+    DOCX_AVAILABLE = False
 
 
 def extract_text_from_pdf(pdf_path: str) -> str:
@@ -66,9 +72,72 @@ def chunk_text(text: str, chunk_size: int = 1000, chunk_overlap: int = 200) -> L
     return chunks
 
 
+def extract_text_from_docx(docx_path: str) -> str:
+    """
+    Extract all text from a DOCX file.
+    
+    Args:
+        docx_path: Path to the DOCX file
+        
+    Returns:
+        Extracted text as a string
+    """
+    if not DOCX_AVAILABLE:
+        raise ImportError("python-docx is not installed. Install it with: pip install python-docx")
+    
+    try:
+        doc = Document(docx_path)
+        text = ""
+        for paragraph in doc.paragraphs:
+            text += paragraph.text + "\n"
+        return text
+    except Exception as e:
+        raise Exception(f"Error reading DOCX: {str(e)}")
+
+
+def process_document(file_path: str, chunk_size: int = 1000, chunk_overlap: int = 200) -> List[str]:
+    """
+    Process a document (PDF or DOCX) and return chunks.
+    
+    Args:
+        file_path: Path to the document file
+        chunk_size: Maximum size of each chunk
+        chunk_overlap: Overlap between chunks
+        
+    Returns:
+        List of text chunks ready for embedding
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
+    
+    # Determine file type
+    file_ext = os.path.splitext(file_path)[1].lower()
+    
+    if file_ext == '.pdf':
+        print(f"Extracting text from PDF: {file_path}")
+        text = extract_text_from_pdf(file_path)
+    elif file_ext in ['.docx', '.doc']:
+        print(f"Extracting text from DOCX: {file_path}")
+        text = extract_text_from_docx(file_path)
+    else:
+        raise ValueError(f"Unsupported file type: {file_ext}. Supported: .pdf, .docx")
+    
+    if not text.strip():
+        raise ValueError(f"No text could be extracted from {file_path}")
+    
+    print(f"Text extracted: {len(text)} characters")
+    
+    print(f"Chunking text into pieces...")
+    chunks = chunk_text(text, chunk_size, chunk_overlap)
+    print(f"Created {len(chunks)} chunks")
+    
+    return chunks
+
+
 def process_pdf(pdf_path: str, chunk_size: int = 1000, chunk_overlap: int = 200) -> List[str]:
     """
     Complete PDF processing pipeline: extract text and chunk it.
+    (Kept for backward compatibility)
     
     Args:
         pdf_path: Path to the PDF file
@@ -78,21 +147,6 @@ def process_pdf(pdf_path: str, chunk_size: int = 1000, chunk_overlap: int = 200)
     Returns:
         List of text chunks ready for embedding
     """
-    if not os.path.exists(pdf_path):
-        raise FileNotFoundError(f"PDF file not found: {pdf_path}")
-    
-    print(f"Extracting text from PDF: {pdf_path}")
-    text = extract_text_from_pdf(pdf_path)
-    
-    if not text.strip():
-        raise ValueError("No text could be extracted from the PDF. Is it a scanned image?")
-    
-    print(f"Text extracted: {len(text)} characters")
-    
-    print(f"Chunking text into pieces...")
-    chunks = chunk_text(text, chunk_size, chunk_overlap)
-    print(f"Created {len(chunks)} chunks")
-    
-    return chunks
+    return process_document(pdf_path, chunk_size, chunk_overlap)
 
 

@@ -23,12 +23,14 @@ class RAGPipeline:
         self.groq_model = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
         self.use_groq = False  # Flag to track if we're using Groq
         
+        # Initialize Ollama client
         try:
-            ollama.Client(host=self.ollama_base_url)
+            self.ollama_client = ollama.Client(host=self.ollama_base_url)
             self.ollama_available = True
             print(f"RAG Pipeline initialized with Ollama model: {self.model_name}")
         except Exception as e:
             print(f"Ollama initialization warning: {str(e)}")
+            self.ollama_client = None
             self.ollama_available = False
             if self.groq_api_key:
                 print(f"Groq fallback will be used. Model: {self.groq_model}")
@@ -56,7 +58,11 @@ class RAGPipeline:
     def generate_response_ollama(self, query: str, context: str) -> str:
         """Generate response using Ollama (primary method)"""
         try:
-            response = ollama.generate(
+            if not self.ollama_client:
+                # Reinitialize client if needed
+                self.ollama_client = ollama.Client(host=self.ollama_base_url)
+            
+            response = self.ollama_client.generate(
                 model=self.model_name,
                 prompt=self._create_prompt(query, context),
                 stream=False
@@ -122,16 +128,22 @@ Answer:"""
     def generate_response(self, query: str, context: str) -> str:
         """Generate response with automatic fallback: Ollama -> Groq"""
         
-        # Try Ollama first (if available)
-        if self.ollama_available:
+        # Always try Ollama first if it's available (check connection first)
+        # This ensures we use Ollama if it's working, even if it failed before
+        if self.ollama_available or self.test_ollama_connection():
             try:
                 self.use_groq = False
                 response = self.generate_response_ollama(query, context)
+                # If successful, ensure ollama_available is True
+                self.ollama_available = True
                 return response
             except Exception as e:
                 print(f"Ollama failed: {str(e)}")
                 print("Falling back to Groq...")
-                self.ollama_available = False  # Mark Ollama as unavailable
+                # Don't permanently mark as unavailable - might be temporary
+                # Only mark as unavailable if connection test also fails
+                if not self.test_ollama_connection():
+                    self.ollama_available = False
         
         # Fallback to Groq if Ollama failed or unavailable
         if self.groq_api_key:
@@ -173,24 +185,36 @@ Answer:"""
         }
     
     def test_ollama_connection(self) -> bool:
-
+        """Test if Ollama is accessible and model is available"""
         try:
-            models = ollama.list()
-            model_names = [model['name'] for model in models.get('models', [])]
+            # Reinitialize client if needed
+            if not self.ollama_client:
+                self.ollama_client = ollama.Client(host=self.ollama_base_url)
+            
+            models_response = self.ollama_client.list()
+            
+            # Handle ListResponse object (new ollama library format)
+            if hasattr(models_response, 'models'):
+                model_names = [model.model for model in models_response.models]
+            elif isinstance(models_response, dict) and 'models' in models_response:
+                model_names = [m.get('name') or m.get('model') for m in models_response['models']]
+            else:
+                model_names = []
             
             if self.model_name in model_names:
-                print(f"✓ Ollama connection successful. Model '{self.model_name}' is available.")
+                print(f"Ollama connection successful. Model '{self.model_name}' is available.")
                 self.ollama_available = True
                 return True
             else:
-                print(f"⚠ Ollama is running, but model '{self.model_name}' not found.")
+                print(f"Ollama is running, but model '{self.model_name}' not found.")
                 print(f"Available models: {', '.join(model_names)}")
                 print(f"Please run: ollama pull {self.model_name}")
                 self.ollama_available = False
                 return False
         
         except Exception as e:
-            print(f"✗ Ollama connection failed: {str(e)}")
+            print(f"Ollama connection failed: {str(e)}")
             print(f"Make sure Ollama is running on {self.ollama_base_url}")
+            self.ollama_client = None
             self.ollama_available = False
             return False
