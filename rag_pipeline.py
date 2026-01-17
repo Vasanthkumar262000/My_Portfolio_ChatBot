@@ -55,7 +55,8 @@ class RAGPipeline:
         seen_indices = set()
         
         for expanded_query in expanded_queries:
-            results = self.vector_store.search(expanded_query, top_k=top_k, min_similarity=0.25)
+            # Lower threshold to catch more relevant results
+            results = self.vector_store.search(expanded_query, top_k=top_k * 2, min_similarity=0.15)
             
             for result in results:
                 # Use text as unique identifier to avoid duplicates
@@ -71,16 +72,16 @@ class RAGPipeline:
         if not results:
             return ""
 
-        # Build context with relevance scores
+        # Build context - include all results, even lower scores
+        # The LLM can filter out irrelevant content
         context_parts = []
         for i, result in enumerate(results, 1):
             text = result["text"]
             score = result.get("score", 0.0)
-            metadata = result.get("metadata", {})
-            filename = metadata.get("filename", "document")
             
-            # Only include high-quality matches
-            if score >= 0.3:
+            # Lower threshold - include results above 0.15
+            # This ensures we get context even if similarity is moderate
+            if score >= 0.15:
                 context_parts.append(text)
         
         if not context_parts:

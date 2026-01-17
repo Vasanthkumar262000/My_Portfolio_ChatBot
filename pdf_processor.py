@@ -79,12 +79,20 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
 
 def _clean_extracted_text(text: str) -> str:
-    """Clean extracted text while preserving structure"""
+    """Clean extracted text while preserving structure and fixing spacing issues"""
     if not text:
         return ""
     
     # Remove control characters except newlines and tabs
     text = re.sub(r'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f-\x9f]', '', text)
+    
+    # Fix common PDF extraction issues: missing spaces between words
+    # Pattern: lowercase/uppercase transition without space (e.g., "NameVasanth" -> "Name Vasanth")
+    text = re.sub(r'([a-z])([A-Z])', r'\1 \2', text)
+    # Pattern: digit followed by letter (e.g., "4Years" -> "4 Years")
+    text = re.sub(r'(\d)([A-Za-z])', r'\1 \2', text)
+    # Pattern: letter followed by digit (e.g., "Year4" -> "Year 4")
+    text = re.sub(r'([A-Za-z])(\d)', r'\1 \2', text)
     
     # Normalize whitespace but preserve line breaks
     lines = text.split('\n')
