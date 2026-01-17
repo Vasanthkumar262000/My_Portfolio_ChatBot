@@ -49,24 +49,43 @@ def main():
         
         # Process document
         print(f"Processing {file_ext.upper()} file...")
-        chunks = process_document(file_path, chunk_size=1000, chunk_overlap=200)
+        chunks = process_document(file_path, chunk_size=1500, chunk_overlap=400)
         
         if not chunks:
-            print("Error: No text could be extracted from the file.")
+            print("[ERROR] No text could be extracted from the file.")
+            print("Possible reasons:")
+            print("  - File is image-based (scanned PDF)")
+            print("  - File is corrupted")
+            print("  - File is password protected")
             sys.exit(1)
         
         print(f"[OK] Extracted {len(chunks)} chunks\n")
         
-        # Create metadata
+        # Create rich metadata for better retrieval
         filename = os.path.basename(file_path)
-        metadata = [{"filename": filename, "chunk_id": i} for i in range(len(chunks))]
+        file_size = os.path.getsize(file_path)
+        
+        metadata = []
+        for i, chunk in enumerate(chunks):
+            # Extract key terms from chunk for better searchability
+            words = chunk.lower().split()[:10]  # First 10 words as keywords
+            keywords = ' '.join(words)
+            
+            metadata.append({
+                "filename": filename,
+                "chunk_id": i,
+                "chunk_index": i,
+                "total_chunks": len(chunks),
+                "file_size": file_size,
+                "keywords": keywords[:100]  # Limit keyword length
+            })
         
         # Add to vector store
-        print("Generating embeddings and adding to vector store...")
+        print("[Processing] Generating embeddings (this may take a moment)...")
         vector_store.add_documents(chunks, metadata)
         
         # Save vector store
-        print("Saving vector store to disk...")
+        print("[Saving] Writing vector store to disk...")
         vector_store.save()
         
         # Show statistics

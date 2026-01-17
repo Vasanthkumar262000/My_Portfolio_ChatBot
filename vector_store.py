@@ -47,31 +47,58 @@ class VectorStore:
         
         print(f"Added {len(texts)} documents to vector store. Total: {self.index.ntotal}")
     
-    def search(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
-
+    def search(self, query: str, top_k: int = 5, min_similarity: float = 0.3) -> List[Dict[str, Any]]:
+        """
+        Professional search with similarity thresholding and intelligent ranking.
+        
+        Args:
+            query: Search query
+            top_k: Number of results to return
+            min_similarity: Minimum similarity score (0-1) to include result
+            
+        Returns:
+            List of search results sorted by relevance
+        """
         if self.index.ntotal == 0:
             return []
 
+        # Generate query embedding
         query_embedding = self.embedding_service.embed_text(query)
-
         query_embedding = query_embedding.reshape(1, -1)
-
         faiss.normalize_L2(query_embedding)
         
-        distances, indices = self.index.search(query_embedding, min(top_k, self.index.ntotal))
+        # Search more candidates than needed for better filtering
+        search_k = min(top_k * 3, self.index.ntotal)
+        distances, indices = self.index.search(query_embedding, search_k)
 
         results = []
         for i, (distance, idx) in enumerate(zip(distances[0], indices[0])):
-            if idx < len(self.texts):
-
-                similarity = 1 - (distance / 2)
-                
-                results.append({
-                    "text": self.texts[idx],
-                    "metadata": self.metadata[idx],
-                    "score": float(similarity),
-                    "rank": i + 1
-                })
+            if idx >= len(self.texts):
+                continue
+            
+            # Convert L2 distance to cosine similarity
+            # L2 distance on normalized vectors: d = sqrt(2 - 2*cos(θ))
+            # So: cos(θ) = 1 - d²/2
+            similarity = max(0.0, 1.0 - (distance ** 2) / 2.0)
+            
+            # Apply similarity threshold
+            if similarity < min_similarity:
+                continue
+            
+            results.append({
+                "text": self.texts[idx],
+                "metadata": self.metadata[idx],
+                "score": float(similarity),
+                "distance": float(distance),
+                "rank": len(results) + 1
+            })
+            
+            # Stop when we have enough high-quality results
+            if len(results) >= top_k:
+                break
+        
+        # Sort by score (descending) to ensure best results first
+        results.sort(key=lambda x: x["score"], reverse=True)
         
         return results
     

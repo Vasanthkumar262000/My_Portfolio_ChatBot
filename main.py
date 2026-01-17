@@ -162,7 +162,7 @@ async def upload_pdf(file: UploadFile = File(...)):
             f.write(content)
         
         # Process PDF - extract text and chunk it
-        chunks = process_pdf(file_path, chunk_size=1000, chunk_overlap=200)
+        chunks = process_pdf(file_path, chunk_size=1500, chunk_overlap=400)
         
         if not chunks:
             raise HTTPException(status_code=400, detail="No text could be extracted from PDF")
