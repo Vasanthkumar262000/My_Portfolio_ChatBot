@@ -4,6 +4,7 @@ from typing import List, Dict, Any
 from dotenv import load_dotenv
 from vector_store import VectorStore
 from embedding_service import EmbeddingService
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 
 load_dotenv()
 
@@ -108,9 +109,10 @@ class RAGPipeline:
         
         return queries[:3]  # Limit to 3 variations
     
-    def generate_response_ollama(self, query: str, context: str) -> str:
-        """Generate response using Ollama (primary method)"""
-        try:
+    def generate_response_ollama(self, query: str, context: str, timeout: int = 5) -> str:
+        """Generate response using Ollama (primary method) with timeout"""
+        def _call_ollama():
+            """Internal function to call Ollama"""
             if not self.ollama_client:
                 # Reinitialize client if needed
                 self.ollama_client = ollama.Client(host=self.ollama_base_url)
@@ -121,6 +123,15 @@ class RAGPipeline:
                 stream=False
             )
             return response['response'].strip()
+        
+        try:
+            # Use ThreadPoolExecutor for timeout
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(_call_ollama)
+                response = future.result(timeout=timeout)
+                return response
+        except FutureTimeoutError:
+            raise Exception(f"Ollama timeout: No response within {timeout} seconds")
         except Exception as e:
             raise Exception(f"Ollama error: {str(e)}")
     
@@ -177,20 +188,25 @@ Question: {query}
 Answer:"""
     
     def generate_response(self, query: str, context: str) -> str:
-        """Generate response with automatic fallback: Ollama -> Groq"""
+        """Generate response with automatic fallback: Ollama -> Groq (with 5s timeout)"""
         
         # Always try Ollama first if it's available (check connection first)
         # This ensures we use Ollama if it's working, even if it failed before
         if self.ollama_available or self.test_ollama_connection():
             try:
                 self.use_groq = False
-                response = self.generate_response_ollama(query, context)
+                # Try Ollama with 5 second timeout
+                response = self.generate_response_ollama(query, context, timeout=5)
                 # If successful, ensure ollama_available is True
                 self.ollama_available = True
                 return response
             except Exception as e:
-                print(f"Ollama failed: {str(e)}")
-                print("Falling back to Groq...")
+                error_msg = str(e)
+                if "timeout" in error_msg.lower():
+                    print(f"Ollama timeout: No response within 5 seconds. Switching to Groq...")
+                else:
+                    print(f"Ollama failed: {error_msg}")
+                    print("Falling back to Groq...")
                 # Don't permanently mark as unavailable - might be temporary
                 # Only mark as unavailable if connection test also fails
                 if not self.test_ollama_connection():
