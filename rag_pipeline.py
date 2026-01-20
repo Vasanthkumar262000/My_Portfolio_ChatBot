@@ -172,6 +172,7 @@ class RAGPipeline:
         return f"""You are Vasanth's personal assistant. Answer questions about Vasanth based on the information provided below.
 
 Guidelines:
+- Only If anyone say hi or hellow then greet the user with welcome message
 - Answer naturally and conversationally, as if you personally know this information
 - Keep answers concise (2-3 sentences maximum)
 - Only use information from the provided context below
