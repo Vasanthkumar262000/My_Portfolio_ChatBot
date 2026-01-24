@@ -169,7 +169,7 @@ class RAGPipeline:
     
     def _create_prompt(self, query: str, context: str) -> str:
         """Create optimized prompt for LLM"""
-        return f"""You are Vasanth's personal assistant. Answer questions about Vasanth based on the information provided below.
+        return f"""You are Vasanth's personal assistant. Answer questions about Vasanth based on the information provided below.If someone says "hi" or "hello" then greet the user with welcome message do not tell them I dont have information about Vasanth.
 
 Guidelines:
 - Only If anyone say hi or hellow then greet the user with welcome message
@@ -229,14 +229,51 @@ Answer:"""
             print(error_msg)
             return f"I found relevant information, but couldn't generate a response. {error_msg} Please check if Ollama is running or configure Groq API key."
 
+    def _is_greeting(self, query: str) -> bool:
+        """Check if the query is a greeting"""
+        greeting_words = [
+            "hi", "hello", "hey", "greetings", "good morning", "good afternoon", 
+            "good evening", "hi there", "hello there", "hey there", "what's up",
+            "howdy", "sup", "hola", "namaste"
+        ]
+        query_lower = query.lower().strip()
+        # Remove punctuation for matching
+        query_clean = ''.join(c for c in query_lower if c.isalnum() or c.isspace())
+        query_words = query_clean.split()
+        
+        # Check if query is just a greeting or starts with greeting
+        if len(query_words) <= 3:  # Short queries like "hi", "hello", "hi there"
+            return any(greeting in query_lower for greeting in greeting_words)
+        else:
+            # Check if query starts with a greeting
+            first_word = query_words[0] if query_words else ""
+            return first_word in greeting_words or any(query_lower.startswith(g) for g in greeting_words)
+    
     def chat(self, query: str, top_k: int = 5) -> Dict[str, Any]:
         """
         Enhanced chat with better context retrieval and response generation.
         """
+        # Check if it's a greeting first
+        if self._is_greeting(query):
+            greeting_responses = [
+                "Hello! I'm Vasanth's portfolio assistant. How can I help you today?",
+                "Hi there! I can help you learn about Vasanth's experience, skills, projects, and more. What would you like to know?",
+                "Hello! Welcome! I'm here to answer questions about Vasanth. What can I help you with?",
+                "Hi! I'm Vasanth's assistant. Feel free to ask me anything about his background, experience, or skills!"
+            ]
+            import random
+            return {
+                "response": random.choice(greeting_responses),
+                "context": "",
+                "sources": [],
+                "model": self.groq_model if self.use_groq else self.model_name,
+                "provider": "groq" if self.use_groq else "ollama"
+            }
+        
         # Retrieve context with expanded search
         context = self.retrieve_context(query, top_k=top_k)
         
-        # If no context found, return early
+        # If no context found, return helpful message
         if not context or not context.strip():
             return {
                 "response": "I don't have specific information about that in my knowledge base. Could you try rephrasing your question or ask about Vasanth's experience, skills, projects, or education?",
