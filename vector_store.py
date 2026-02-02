@@ -1,12 +1,22 @@
 """
-Vector Store - Manages FAISS vector database for storing and searching embeddings
+Vector Store - Manages FAISS vector database for storing and searching embeddings.
+Supports hybrid search (vector + keyword) for better retrieval when embeddings miss.
 """
+import re
 import faiss
 import numpy as np
 import pickle
 import os
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 from embedding_service import EmbeddingService
+
+
+def _tokenize_for_search(text: str) -> Set[str]:
+    """Lowercase alphanumeric tokens, min length 2, for keyword matching."""
+    if not text:
+        return set()
+    words = re.findall(r"[a-z0-9]{2,}", text.lower())
+    return set(words)
 
 
 class VectorStore:
@@ -101,7 +111,79 @@ class VectorStore:
         results.sort(key=lambda x: x["score"], reverse=True)
         
         return results
-    
+
+    def search_keyword(self, query: str, top_k: int = 10) -> List[Dict[str, Any]]:
+        """
+        Keyword-based search: rank chunks by overlap with query terms.
+        Helps when vector similarity is low but the document contains the exact terms.
+        """
+        if self.index.ntotal == 0:
+            return []
+        q_tokens = _tokenize_for_search(query)
+        if not q_tokens:
+            return []
+        scored = []
+        for idx, text in enumerate(self.texts):
+            chunk_tokens = _tokenize_for_search(text)
+            overlap = len(q_tokens & chunk_tokens) / len(q_tokens)
+            if overlap > 0:
+                scored.append({
+                    "text": text,
+                    "metadata": self.metadata[idx],
+                    "score": float(overlap),
+                    "rank": 0,
+                })
+        scored.sort(key=lambda x: x["score"], reverse=True)
+        for i, r in enumerate(scored[:top_k], 1):
+            r["rank"] = i
+        return scored[:top_k]
+
+    def search_hybrid(
+        self,
+        query: str,
+        top_k: int = 5,
+        min_similarity: float = 0.12,
+        vector_weight: float = 0.55,
+        keyword_weight: float = 0.45,
+    ) -> List[Dict[str, Any]]:
+        """
+        Hybrid search: combine vector similarity and keyword overlap.
+        Ensures chunks that contain query terms (e.g. "Vasanth", "experience")
+        are boosted even when embedding similarity is moderate.
+        """
+        if self.index.ntotal == 0:
+            return []
+        # Get vector candidates (use min_similarity=0 so we get scores for all; keyword will boost matches)
+        vector_results = self.search(query, top_k=min(top_k * 4, self.index.ntotal), min_similarity=0.0)
+        # Get keyword results
+        keyword_results = self.search_keyword(query, top_k=top_k * 3)
+        # Build index by chunk text so we can merge vector + keyword scores for same chunk
+        by_key = {}
+        for r in vector_results:
+            key = r["text"]
+            by_key[key] = {"vector_score": r["score"], "keyword_score": 0.0, "r": r}
+        for r in keyword_results:
+            key = r["text"]
+            if key not in by_key:
+                by_key[key] = {"vector_score": 0.0, "keyword_score": r["score"], "r": r}
+            else:
+                by_key[key]["keyword_score"] = r["score"]
+        # Normalize keyword scores to 0-1 scale (they already are)
+        combined = []
+        for v in by_key.values():
+            vec = v["vector_score"]
+            kw = v["keyword_score"]
+            combined_score = vector_weight * vec + keyword_weight * kw
+            r = v["r"].copy()
+            r["score"] = round(combined_score, 4)
+            r["vector_score"] = vec
+            r["keyword_score"] = kw
+            combined.append(r)
+        combined.sort(key=lambda x: x["score"], reverse=True)
+        for i, r in enumerate(combined[:top_k], 1):
+            r["rank"] = i
+        return combined[:top_k]
+
     def save(self):
         """Save the FAISS index and associated data to disk."""
         try:

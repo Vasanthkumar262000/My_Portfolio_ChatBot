@@ -1,6 +1,7 @@
 """
 Script to add a new document (PDF or DOCX) to the vector database.
-Usage: python add_document.py <path_to_file>
+Usage: python add_document.py <path_to_file> [--reindex]
+  --reindex: Clear existing index and re-add only this document (use after fixing RAG pipeline).
 """
 import os
 import sys
@@ -11,18 +12,24 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Chunk sizes tuned for better RAG retrieval (smaller chunks, more overlap)
+CHUNK_SIZE = 700
+CHUNK_OVERLAP = 180
+
 
 def main():
     """Add a document to the vector store."""
+    args = [a for a in sys.argv[1:] if a != "--reindex"]
+    reindex = "--reindex" in sys.argv
     
-    if len(sys.argv) < 2:
-        print("Usage: python add_document.py <path_to_file>")
+    if len(args) < 1:
+        print("Usage: python add_document.py <path_to_file> [--reindex]")
         print("\nExample:")
         print("  python add_document.py data/new_resume.pdf")
-        print("  python add_document.py data/new_resume.docx")
+        print("  python add_document.py data/Vasanth information doc.pdf --reindex")
         sys.exit(1)
     
-    file_path = sys.argv[1]
+    file_path = args[0]
     
     if not os.path.exists(file_path):
         print(f"Error: File not found: {file_path}")
@@ -34,10 +41,18 @@ def main():
         print("Supported: .pdf, .docx, .doc")
         sys.exit(1)
     
+    # Suggest DOCX when it exists (often cleaner than PDF extraction)
+    base = os.path.splitext(file_path)[0]
+    if file_ext == ".pdf" and os.path.isfile(base + ".docx"):
+        print(f"[Tip] {base}.docx exists. DOCX often gives cleaner text for RAG; consider using it for --reindex.")
+    
     print("=" * 60)
     print("Adding Document to Vector Database")
     print("=" * 60)
-    print(f"File: {file_path}\n")
+    print(f"File: {file_path}")
+    if reindex:
+        print("Mode: REINDEX (clearing existing index first)")
+    print()
     
     try:
         # Initialize services
@@ -47,9 +62,14 @@ def main():
         initial_count = vector_store.index.ntotal
         print(f"Current documents in vector store: {initial_count}\n")
         
-        # Process document
-        print(f"Processing {file_ext.upper()} file...")
-        chunks = process_document(file_path, chunk_size=1500, chunk_overlap=400)
+        if reindex:
+            print("[Reindex] Clearing existing vector store...")
+            vector_store.clear()
+            print("[Reindex] Cleared.\n")
+        
+        # Process document with improved chunking (smaller chunks for better retrieval)
+        print(f"Processing {file_ext.upper()} file (chunk_size={CHUNK_SIZE}, overlap={CHUNK_OVERLAP})...")
+        chunks = process_document(file_path, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
         
         if not chunks:
             print("[ERROR] No text could be extracted from the file.")
@@ -96,7 +116,10 @@ def main():
         print(f"Chunks added: {len(chunks)}")
         print(f"Total documents in vector store: {stats['total_documents']}")
         print(f"New documents: {stats['total_documents'] - initial_count}")
-        print("\nRestart your backend to load the new documents!")
+        if reindex:
+            print("\nReindex complete. Restart your backend to use the updated index.")
+        else:
+            print("\nRestart your backend to load the new documents!")
         print("=" * 60)
     
     except Exception as e:

@@ -68,6 +68,8 @@ def extract_text_from_pdf(pdf_path: str) -> str:
         
         # Final normalization
         full_text = _normalize_text(full_text)
+        # Fix PDF extraction artifacts so RAG matches user queries
+        full_text = _correct_pdf_artifacts(full_text)
         
         if not full_text.strip():
             raise ValueError(f"No text could be extracted from PDF: {pdf_path}")
@@ -109,17 +111,66 @@ def _clean_extracted_text(text: str) -> str:
     return '\n'.join(cleaned_lines)
 
 
+def _correct_pdf_artifacts(text: str) -> str:
+    """
+    Fix common PDF extraction/encoding artifacts so RAG can match user queries.
+    (e.g. "Loca4on" -> "Location", "sokware" -> "software", "opEmizaEon" -> "optimization")
+    """
+    if not text:
+        return ""
+    # Unicode ligatures -> ASCII (ﬀ ﬁ ﬂ ﬃ ﬄ)
+    text = text.replace("\ufb00", "ff").replace("\ufb01", "fi").replace("\ufb02", "fl")
+    text = text.replace("\ufb03", "ffi").replace("\ufb04", "ffl")
+    # Common PDF substitution errors (wrong character extracted)
+    replacements = [
+        ("Loca4on", "Location"),
+        ("loca4on", "location"),
+        ("Pla=orms", "Platforms"),
+        ("pla=orms", "platforms"),
+        ("ArEﬁcial", "Artificial"),
+        ("arEﬁcial", "artificial"),
+        ("opEmizaEon", "optimization"),
+        ("OpEmizaEon", "Optimization"),
+        ("opEmized", "optimized"),
+        ("sokware", "software"),
+        ("Sokware", "Software"),
+        ("Scrip4ng", "Scripting"),
+        ("scrip4ng", "scripting"),
+        ("Proﬀeredname", "Preferred name"),
+        ("proﬀeredname", "Preferred name"),
+        ("FristName", "FirstName"),
+        ("fristname", "firstname"),
+        ("automaEon", "automation"),
+        ("AutomaEon", "Automation"),
+        ("workﬂows", "workflows"),
+        ("Workﬂows", "Workflows"),
+        ("Eﬁcient", "Efficient"),
+        ("eﬁcient", "efficient"),
+        ("integraEon", "integration"),
+        ("IntegraEon", "Integration"),
+        ("informaEon", "information"),
+        ("InformaEon", "Information"),
+        ("experiance", "experience"),
+        ("Experiance", "Experience"),
+        ("relevent", "relevant"),
+        ("Relevent", "Relevant"),
+    ]
+    for wrong, right in replacements:
+        text = text.replace(wrong, right)
+    # Generic: digit 4 wrongly used for letter t inside words (e.g. Scrip4ng, Loca4on)
+    text = re.sub(r"([a-zA-Z])4([a-zA-Z])", r"\1t\2", text)
+    # Generic: = wrongly used for f
+    text = re.sub(r"([a-zA-Z])=([a-zA-Z])", r"\1f\2", text)
+    return text
+
+
 def _normalize_text(text: str) -> str:
-    """Final text normalization"""
+    """Final text normalization. Does NOT merge words (that corrupts retrieval)."""
     if not text:
         return ""
     
     # Remove excessive blank lines (more than 2 consecutive)
     text = re.sub(r'\n{3,}', '\n\n', text)
-    
-    # Fix common PDF extraction issues
-    # Fix broken words (space in middle of word)
-    text = re.sub(r'(\w) (\w)', r'\1\2', text)  # But be careful with this
     
     # Normalize unicode quotes and dashes
     text = text.replace('\u201c', '"').replace('\u201d', '"')
@@ -129,77 +180,48 @@ def _normalize_text(text: str) -> str:
     return text.strip()
 
 
-def chunk_text(text: str, chunk_size: int = 1500, chunk_overlap: int = 400) -> List[str]:
+def chunk_text(text: str, chunk_size: int = 700, chunk_overlap: int = 180) -> List[str]:
     """
-    Professional-grade semantic chunking with intelligent boundary detection.
-    Preserves context and semantic meaning across chunks.
-    
-    Args:
-        text: The text to chunk
-        chunk_size: Maximum size of each chunk (in characters)
-        chunk_overlap: Number of characters to overlap between chunks
-        
-    Returns:
-        List of text chunks optimized for RAG
+    Semantic chunking with sentence/paragraph boundaries.
+    Smaller chunks (default 700 chars, 180 overlap) improve retrieval.
     """
     if not text or not text.strip():
         return []
-    
-    # Optimized chunking parameters for better retrieval
-    chunk_size = max(chunk_size, 1500)  # Larger chunks for better context
-    chunk_overlap = max(chunk_overlap, 400)  # More overlap for continuity
-    
-    # Split into paragraphs first (semantic units)
+    chunk_size = max(chunk_size, 400)
+    chunk_overlap = max(chunk_overlap, 80)
     paragraphs = _split_into_paragraphs(text)
-    
     chunks = []
     current_chunk = []
     current_size = 0
-    
     for para in paragraphs:
         para_size = len(para)
-        
-        # If adding this paragraph would exceed chunk size
         if current_size + para_size > chunk_size and current_chunk:
-            # Save current chunk
-            chunk_text = '\n\n'.join(current_chunk)
-            if chunk_text.strip():
-                chunks.append(chunk_text.strip())
-            
-            # Start new chunk with overlap from previous
+            chunk_text_val = "\n\n".join(current_chunk)
+            if chunk_text_val.strip():
+                chunks.append(chunk_text_val.strip())
             overlap_text = _get_overlap_text(current_chunk, chunk_overlap)
             current_chunk = [overlap_text] if overlap_text else []
             current_size = len(overlap_text)
-        
-        # If paragraph itself is larger than chunk_size, split it
         if para_size > chunk_size:
-            # Split large paragraph at sentence boundaries
             sentences = _split_into_sentences(para)
             for sentence in sentences:
                 sent_size = len(sentence)
                 if current_size + sent_size > chunk_size and current_chunk:
-                    chunk_text = '\n\n'.join(current_chunk)
-                    if chunk_text.strip():
-                        chunks.append(chunk_text.strip())
+                    chunk_text_val = "\n\n".join(current_chunk)
+                    if chunk_text_val.strip():
+                        chunks.append(chunk_text_val.strip())
                     current_chunk = []
                     current_size = 0
-                
                 current_chunk.append(sentence)
-                current_size += sent_size + 2  # +2 for '\n\n'
+                current_size += sent_size + 2
         else:
             current_chunk.append(para)
             current_size += para_size + 2
-    
-    # Add final chunk
     if current_chunk:
-        chunk_text = '\n\n'.join(current_chunk)
-        if chunk_text.strip():
-            chunks.append(chunk_text.strip())
-    
-    # Filter out very small chunks (likely artifacts)
-    chunks = [chunk for chunk in chunks if len(chunk.strip()) >= 100]
-    
-    return chunks
+        chunk_text_val = "\n\n".join(current_chunk)
+        if chunk_text_val.strip():
+            chunks.append(chunk_text_val.strip())
+    return [c for c in chunks if len(c.strip()) >= 80]
 
 
 def _split_into_paragraphs(text: str) -> List[str]:
@@ -256,7 +278,9 @@ def extract_text_from_docx(docx_path: str) -> str:
         text = ""
         for paragraph in doc.paragraphs:
             text += paragraph.text + "\n"
-        return text
+        text = _normalize_text(text)
+        text = _correct_pdf_artifacts(text)
+        return text.strip()
     except Exception as e:
         raise Exception(f"Error reading DOCX: {str(e)}")
 
