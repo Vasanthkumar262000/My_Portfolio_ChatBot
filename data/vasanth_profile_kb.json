@@ -1,0 +1,338 @@
+{
+  "knowledge_base": {
+    "document": "Professional Profile - Vasanthkumar Ramamoorthi",
+    "version": "2.0",
+    "last_updated": "2026-03-04",
+    "language": "en",
+    "total_entries": 45,
+    "categories": [
+      "personal_info",
+      "professional_summary",
+      "experience_wersec_aiml_engineer",
+      "experience_wersec_data_engineer",
+      "experience_cognizant_python_engineer",
+      "experience_wipro_software_engineer",
+      "education",
+      "certifications",
+      "technical_skills",
+      "common_questions"
+    ]
+  },
+  "documents": [
+    {
+      "doc_id": "VP-001",
+      "category": "personal_info",
+      "question": "What is Vasanth's full name?",
+      "answer": "Vasanth's full legal name is Vasanthkumar Ramamoorthi. He prefers to be called Vasanth professionally.",
+      "keywords": ["name", "full name", "Vasanthkumar", "Ramamoorthi", "Vasanth"]
+    },
+    {
+      "doc_id": "VP-002",
+      "category": "personal_info",
+      "question": "Where is Vasanth located and what is his contact information?",
+      "answer": "Vasanth is currently located in Chicago, Illinois, United States. He is willing to relocate anywhere within the United States for career opportunities. Contact: Email - vas.ram.2620@gmail.com, Phone - +1 4254574619, Website - www.vasanthkumarr.com, LinkedIn - www.linkedin.com/in/vasanthkumar-r-923748181.",
+      "keywords": ["location", "Chicago", "Illinois", "contact", "email", "phone", "relocate", "LinkedIn", "website"]
+    },
+    {
+      "doc_id": "VP-003",
+      "category": "professional_summary",
+      "question": "What is Vasanth's professional summary?",
+      "answer": "Vasanth is an AI/ML Engineer with over 5 years of professional experience in design and development of software projects, Machine Learning, Generative Artificial Intelligence, Secure Software Development, leveraging advanced technologies and Google Analytics to extract valuable insights from complex datasets. He has expertise in NLP, Sentiment Analysis, GenAI, Deep Learning, CNN, Fine-tuning, Data Visualization, Predictive Modeling, data governance and security.",
+      "keywords": ["professional summary", "AI/ML Engineer", "5 years", "experience", "machine learning", "GenAI"]
+    },
+    {
+      "doc_id": "VP-004",
+      "category": "professional_summary",
+      "question": "How many years of experience does Vasanth have?",
+      "answer": "Vasanth has over 5 years of total professional experience in the technology industry, spanning software development, AI/ML engineering, data engineering, and Python development across multiple companies including WERSEC Inc., Cognizant Ltd, and Wipro Ltd.",
+      "keywords": ["years", "experience", "5 years", "professional"]
+    },
+    {
+      "doc_id": "VP-005",
+      "category": "professional_summary",
+      "question": "What is Vasanth's current job?",
+      "answer": "Vasanth currently works as an AI/ML Engineer at WERSEC Inc. in Illinois, a position he has held since September 2025. In this role, he designs and develops end-to-end AI-powered systems using fine-tuned transformer models, multi-agent validation pipelines, and production-grade ML infrastructure on Google Cloud Platform.",
+      "keywords": ["current job", "WERSEC", "AI/ML Engineer", "present", "current position"]
+    },
+    {
+      "doc_id": "VP-006",
+      "category": "experience_wersec_aiml_engineer",
+      "question": "What does Vasanth do as AI/ML Engineer at WERSEC Inc.?",
+      "answer": "As AI/ML Engineer at WERSEC Inc. (September 2025 to Present), Vasanth designed and developed an end-to-end AI-powered email generation system using a fine-tuned T5 transformer model with TensorFlow and Hugging Face Transformers. He built a multi-agent validation pipeline with 5 specialized AI agents using LangChain and LangGraph to validate generated emails for authentication, spam detection, grammar, brand voice, and compliance.",
+      "keywords": ["WERSEC", "AI/ML Engineer", "email generation", "T5", "multi-agent", "LangChain", "LangGraph"]
+    },
+    {
+      "doc_id": "VP-007",
+      "category": "experience_wersec_aiml_engineer",
+      "question": "What AI agent pipeline did Vasanth build at WERSEC?",
+      "answer": "Vasanth built a multi-agent validation pipeline with 5 specialized AI agents using LangChain and LangGraph. The agents perform: spam classification using BERT-based models with rule-based NLP engines, brand voice alignment using Universal Sentence Encoder and cosine similarity, Grammar Error Correction using fine-tuned T5 and LanguageTool with Flesch-Kincaid readability scoring, and compliance checking integrated with Firestore for CAN-SPAM, GDPR, and industry-specific regulatory requirements.",
+      "keywords": ["agent pipeline", "BERT", "spam", "grammar", "compliance", "GDPR", "CAN-SPAM", "brand voice"]
+    },
+    {
+      "doc_id": "VP-008",
+      "category": "experience_wersec_aiml_engineer",
+      "question": "What cloud infrastructure and MLOps did Vasanth implement at WERSEC?",
+      "answer": "Vasanth conducted distributed model training on Vertex AI using NVIDIA T4 GPUs with mixed precision, LoRA fine-tuning, and AdamW optimization. He implemented RLHF to align email quality with human preferences. He tracked experiments using Vertex AI Experiments and Model Registry. He orchestrated the 5-agent workflow using Apache Airflow on Cloud Composer. All agents and models were deployed as containerized microservices on Google Kubernetes Engine (GKE) using Docker, Helm charts, and Artifact Registry.",
+      "keywords": ["Vertex AI", "GPU", "LoRA", "RLHF", "GKE", "Docker", "Airflow", "Cloud Composer", "MLOps"]
+    },
+    {
+      "doc_id": "VP-009",
+      "category": "experience_wersec_aiml_engineer",
+      "question": "What data engineering and API work did Vasanth do at WERSEC as AI/ML Engineer?",
+      "answer": "Vasanth designed a data preprocessing pipeline using Apache Beam on Google Cloud Dataflow for tokenization, HTML cleaning, feature extraction, and data augmentation at scale. He leveraged BigQuery as a data warehouse for training datasets and validation logs. He built a FastAPI REST API with JWT authentication, rate limiting via Redis (Cloud Memorystore), and async request handling for production-scale email generation.",
+      "keywords": ["Apache Beam", "Dataflow", "BigQuery", "FastAPI", "JWT", "Redis", "data pipeline"]
+    },
+    {
+      "doc_id": "VP-010",
+      "category": "experience_wersec_aiml_engineer",
+      "question": "What CI/CD and monitoring did Vasanth set up at WERSEC?",
+      "answer": "Vasanth established CI/CD pipelines using Google Cloud Build and GitHub Actions for automated testing, Docker image builds, vulnerability scanning, and zero-downtime deployments via blue-green strategy. He monitored model performance and data drift using Vertex AI Model Monitoring, Cloud Monitoring, and OpenTelemetry. He delivered observability through Grafana dashboards and Prometheus metrics. All GCP infrastructure was provisioned using Terraform and Helm for infrastructure as code.",
+      "keywords": ["CI/CD", "Cloud Build", "GitHub Actions", "Grafana", "Prometheus", "Terraform", "monitoring", "blue-green"]
+    },
+    {
+      "doc_id": "VP-011",
+      "category": "experience_wersec_aiml_engineer",
+      "question": "What was the environment and tech stack for Vasanth's AI/ML Engineer role at WERSEC?",
+      "answer": "The environment included: Visual Studio Code, Vertex AI Workbench (Jupyter Notebooks), Google Cloud Platform (GCP), TensorFlow 2.15, Hugging Face Transformers, LangChain, LangGraph, Apache Beam / Cloud Dataflow, BigQuery, Cloud Storage, Cloud Composer (Airflow), GKE (Kubernetes), Docker, FastAPI, Cloud Build / GitHub Actions, Prometheus / Grafana, Terraform, MLflow, DVC, Redis (Cloud Memorystore), Firestore, Cloud SQL, and Vertex AI services (Training, Pipelines, Model Registry, Endpoints, Monitoring).",
+      "keywords": ["tech stack", "environment", "tools", "WERSEC", "AI/ML Engineer"]
+    },
+    {
+      "doc_id": "VP-012",
+      "category": "experience_wersec_data_engineer",
+      "question": "What did Vasanth do as Data Engineer (AI/ML) at WERSEC Inc.?",
+      "answer": "As Data Engineer (AI/ML) at WERSEC Inc. (October 2024 to September 2025), Vasanth developed a binary classification model to predict 30-day readmission risks using EHR datasets achieving 98% ROC AUC. He integrated FHIR APIs for secure patient data ingestion, applied de-identification techniques for HIPAA compliance, and built a RAG pipeline combining FAISS Vector DB and LLMs to improve medical Q&A chatbot accuracy.",
+      "keywords": ["Data Engineer", "WERSEC", "readmission", "EHR", "FHIR", "HIPAA", "RAG", "FAISS", "medical chatbot"]
+    },
+    {
+      "doc_id": "VP-013",
+      "category": "experience_wersec_data_engineer",
+      "question": "What NLP and LLM work did Vasanth do in his Data Engineer role at WERSEC?",
+      "answer": "Vasanth used spaCy for clinical Named Entity Recognition (NER) extraction and linked entities to UMLS knowledge base. He designed custom prompts and memory chains in LangChain for summarizing lab reports. He enabled audit trails for LLM predictions using LangChain callbacks and logging layers. He also developed an internal annotation tool for clinicians to validate LLM summaries.",
+      "keywords": ["NLP", "spaCy", "NER", "UMLS", "LangChain", "lab reports", "LLM", "annotation tool"]
+    },
+    {
+      "doc_id": "VP-014",
+      "category": "experience_wersec_data_engineer",
+      "question": "What were Vasanth's key achievements as Data Engineer at WERSEC?",
+      "answer": "Vasanth reduced document analysis time by 80%, boosting clinical staff productivity. He achieved a 25% reduction in false positives for disease prediction models via SHAP-based tuning. He provided explainable AI outputs using LIME and SHAP for healthcare stakeholders. He automated daily data pipelines with Airflow to clean, transform, and store 100K+ records per day. He ensured PHI masking and encryption at rest and in-transit for AI data workflows.",
+      "keywords": ["achievements", "80% reduction", "SHAP", "LIME", "explainable AI", "Airflow", "PHI", "encryption"]
+    },
+    {
+      "doc_id": "VP-015",
+      "category": "experience_wersec_data_engineer",
+      "question": "What was the tech stack for Vasanth's Data Engineer role at WERSEC?",
+      "answer": "The environment included: Python, Scikit-learn, XGBoost, Hugging Face, LangChain, Transformers, SHAP, LIME, AWS S3, Glue, Lambda, SageMaker, SageMaker Pipelines, Streamlit, Power BI, Matplotlib, Docker, Kubernetes, GitHub Actions, MLflow, DVC, BERT, and RAG.",
+      "keywords": ["tech stack", "Data Engineer", "WERSEC", "tools", "environment"]
+    },
+    {
+      "doc_id": "VP-016",
+      "category": "experience_cognizant_python_engineer",
+      "question": "What did Vasanth do as Python Engineer at Cognizant Ltd?",
+      "answer": "As Python Engineer at Cognizant Ltd in India (September 2021 to August 2023), Vasanth developed a customer churn prediction model using XGBoost that increased retention by targeting high-risk subscribers. He built and deployed RESTful APIs using FastAPI to serve ML insights to Oracle CRM user dashboards. He automated ETL jobs in Python to extract and cleanse customer and billing data from Oracle BRM.",
+      "keywords": ["Cognizant", "Python Engineer", "churn prediction", "XGBoost", "FastAPI", "Oracle CRM", "Oracle BRM"]
+    },
+    {
+      "doc_id": "VP-017",
+      "category": "experience_cognizant_python_engineer",
+      "question": "What ML and data engineering work did Vasanth do at Cognizant?",
+      "answer": "Vasanth integrated Oracle SOA Suite with Python services for seamless orchestration between CRM, BRM, and ML APIs. He processed CDR (Call Detail Records) and usage logs from OSS/BSS systems using Pandas and NumPy. He performed anomaly detection on network usage data using Isolation Forest and AutoEncoder models. He designed end-to-end pipelines for customer segmentation using KMeans clustering on usage, billing, and support history.",
+      "keywords": ["Oracle SOA", "CDR", "anomaly detection", "Isolation Forest", "AutoEncoder", "KMeans", "clustering"]
+    },
+    {
+      "doc_id": "VP-018",
+      "category": "experience_cognizant_python_engineer",
+      "question": "What NLP and AI models did Vasanth build at Cognizant?",
+      "answer": "Vasanth built a customer support ticket classifier using BERT and integrated it with CRM for auto-routing cases. He developed an ML-based usage forecasting model to predict data overage and upsell opportunities. He deployed fraud detection logic using pattern recognition on BRM financial transactions. He used SHAP and LIME to provide explainability of ML models to non-technical Oracle CRM users. He reduced manual support case classification time by 65% by integrating NLP models with Oracle support workflows.",
+      "keywords": ["BERT", "ticket classifier", "fraud detection", "SHAP", "LIME", "NLP", "65% reduction"]
+    },
+    {
+      "doc_id": "VP-019",
+      "category": "experience_cognizant_python_engineer",
+      "question": "What were Vasanth's key achievements and infrastructure work at Cognizant?",
+      "answer": "Vasanth integrated Kafka with Python consumer services to process streaming network logs for anomaly detection. He used Docker to containerize AI services for Oracle stack consumption. He maintained secure pipelines for handling sensitive telecom data using masking, logging, and audit trails. He tuned ML models using GridSearchCV and scheduled retraining every 30 days using cron and Airflow based on Oracle BRM data snapshots.",
+      "keywords": ["Kafka", "streaming", "Docker", "security", "GridSearchCV", "retraining", "Airflow"]
+    },
+    {
+      "doc_id": "VP-020",
+      "category": "experience_cognizant_python_engineer",
+      "question": "What was the tech stack for Vasanth's role at Cognizant?",
+      "answer": "The environment included: Oracle BRM, Siebel CRM, OSB (Oracle Service Bus), SOA Suite, Git, Jenkins, Docker, Maven, SonarQube, SOAP/REST, JMS, WebLogic Server, Oracle 12c, Oracle Enterprise Manager, SQL, Excel, VSCode, C, Linux, JIRA, Splunk, Python, ML, Scikit-learn, XGBoost, FastAPI, Pandas, Airflow, and Kafka.",
+      "keywords": ["tech stack", "Cognizant", "Oracle", "tools", "environment"]
+    },
+    {
+      "doc_id": "VP-021",
+      "category": "experience_wipro_software_engineer",
+      "question": "What did Vasanth do as Software Engineer at Wipro Ltd?",
+      "answer": "As Software Engineer (Python/ML Developer) at Wipro Ltd in India (June 2020 to September 2021), Vasanth designed and deployed a face recognition attendance system using OpenCV, Dlib, and FaceNet. The use case was automating employee and student attendance using face recognition with real-time camera feeds.",
+      "keywords": ["Wipro", "Software Engineer", "face recognition", "attendance", "OpenCV", "FaceNet"]
+    },
+    {
+      "doc_id": "VP-022",
+      "category": "experience_wipro_software_engineer",
+      "question": "What were the technical details of Vasanth's face recognition project at Wipro?",
+      "answer": "Vasanth collected and preprocessed image datasets of over 1000 individuals with real-time video capture. He extracted 128-dimensional facial embeddings using pre-trained FaceNet model for high-accuracy matching. He trained a K-Nearest Neighbors (KNN) classifier on facial embeddings for identity classification. He implemented face detection using Haar cascades and MTCNN for diverse lighting conditions. He designed a facial verification pipeline to reject spoofing attempts using liveness detection techniques. He achieved over 95% face recognition accuracy across varied angles and lighting using data augmentation.",
+      "keywords": ["FaceNet", "embeddings", "KNN", "MTCNN", "Haar cascades", "liveness detection", "95% accuracy"]
+    },
+    {
+      "doc_id": "VP-023",
+      "category": "experience_wipro_software_engineer",
+      "question": "What backend and infrastructure did Vasanth build for the Wipro attendance system?",
+      "answer": "Vasanth built a backend API in FastAPI to record attendance and integrate with HR/student management systems. He stored attendance logs in SQLite/PostgreSQL database with timestamps and camera ID metadata. He configured automatic email/SMS alerts for repeated absentees. He created an admin portal to view attendance logs, camera feeds, and generate CSV reports. He enforced GDPR-compliant data storage by encrypting facial embeddings at rest. He implemented automatic daily backup to cloud (AWS S3/Google Drive). He reduced manual attendance tracking time by 90% and increased accuracy of logs.",
+      "keywords": ["FastAPI", "PostgreSQL", "attendance logs", "admin portal", "GDPR", "90% reduction", "AWS S3"]
+    },
+    {
+      "doc_id": "VP-024",
+      "category": "experience_wipro_software_engineer",
+      "question": "What was the tech stack for Vasanth's role at Wipro?",
+      "answer": "The environment included: HTML5, CSS, SCSS, VSCode, Bootstrap, Python, MySQL, PostgreSQL, Notepad++, Spyder, Anaconda, and SVN.",
+      "keywords": ["tech stack", "Wipro", "tools", "environment"]
+    },
+    {
+      "doc_id": "VP-025",
+      "category": "education",
+      "question": "What education does Vasanth have?",
+      "answer": "Vasanth holds a Master's degree from DePaul University, completed in 2025. He also holds an undergraduate degree from Sri Ramakrishna Engineering College, Anna University, completed in 2021.",
+      "keywords": ["education", "DePaul University", "Sri Ramakrishna", "Anna University", "Master's", "degree"]
+    },
+    {
+      "doc_id": "VP-026",
+      "category": "certifications",
+      "question": "What certifications does Vasanth hold?",
+      "answer": "Vasanth holds the following certifications: AWS Machine Learning Engineering - Associate, AWS AI Practitioner, Google AI Essentials and Generative AI Fundamentals, and Microsoft Certified Python Developer.",
+      "keywords": ["certifications", "AWS", "Google", "Microsoft", "Machine Learning", "AI Practitioner"]
+    },
+    {
+      "doc_id": "VP-027",
+      "category": "technical_skills",
+      "question": "What programming languages and databases does Vasanth know?",
+      "answer": "Vasanth is proficient in C#, Java, HTML, CSS, Tailwind CSS, SQL, Shell Scripting, Python, R (Novice), MySQL, MongoDB, Pinecone (vector database), JavaScript, and TypeScript.",
+      "keywords": ["languages", "databases", "Python", "Java", "SQL", "MongoDB", "Pinecone", "JavaScript"]
+    },
+    {
+      "doc_id": "VP-028",
+      "category": "technical_skills",
+      "question": "What development tools and IDEs does Vasanth use?",
+      "answer": "Vasanth uses Visual Studio, Git, GitHub, Jupyter Notebooks, Google Colab, Docker, and Kubernetes for development and deployment.",
+      "keywords": ["tools", "IDE", "Visual Studio", "Git", "Docker", "Kubernetes", "Jupyter"]
+    },
+    {
+      "doc_id": "VP-029",
+      "category": "technical_skills",
+      "question": "What libraries and frameworks does Vasanth work with?",
+      "answer": "Vasanth works with NumPy, Pandas, OpenCV, Keras, TensorFlow, Scikit-learn, PyTorch, Matplotlib, Seaborn, Plotly, NLTK, spaCy, LangChain, and LangGraph.",
+      "keywords": ["libraries", "frameworks", "TensorFlow", "PyTorch", "LangChain", "OpenCV", "spaCy"]
+    },
+    {
+      "doc_id": "VP-030",
+      "category": "technical_skills",
+      "question": "What AI-related technologies does Vasanth specialize in?",
+      "answer": "Vasanth specializes in Large Language Models (LLMs), Small Language Models (SLMs), Retrieval-Augmented Generation (RAG), AI Agents, Machine Learning (Supervised, Unsupervised, Reinforcement Learning), Deep Learning (ANN, CNN, RNN, LSTM, Transformers, BERT), and NLP (Tokenization, Embeddings, NER, Text Classification, Sentiment Analysis).",
+      "keywords": ["AI", "LLM", "RAG", "AI Agents", "Deep Learning", "NLP", "Transformers", "BERT"]
+    },
+    {
+      "doc_id": "VP-031",
+      "category": "technical_skills",
+      "question": "What cloud technologies does Vasanth work with?",
+      "answer": "Vasanth works with AWS, Google Cloud Platform (GCP), and Azure (Basic Implementation). His GCP expertise includes Vertex AI, Cloud Dataflow, BigQuery, GKE, Cloud Composer, and Cloud Build. His AWS expertise includes S3, Glue, Lambda, SageMaker, and SageMaker Pipelines.",
+      "keywords": ["cloud", "AWS", "GCP", "Azure", "Vertex AI", "SageMaker", "BigQuery"]
+    },
+    {
+      "doc_id": "VP-032",
+      "category": "technical_skills",
+      "question": "What BI and visualization tools does Vasanth use?",
+      "answer": "Vasanth uses Power BI, Tableau, and Excel for business intelligence and data visualization.",
+      "keywords": ["BI", "visualization", "Power BI", "Tableau", "Excel"]
+    },
+    {
+      "doc_id": "VP-033",
+      "category": "technical_skills",
+      "question": "What data quality and workflow methodologies does Vasanth follow?",
+      "answer": "Vasanth follows Agile, Waterfall, and SDLC workflow methodologies. For data quality, he has experience in Data Governance, Data Management, Data Pipelines, Data Profiling and Cleaning, and Data Analysis and Visualization.",
+      "keywords": ["Agile", "Waterfall", "SDLC", "data governance", "data management", "data pipelines"]
+    },
+    {
+      "doc_id": "VP-034",
+      "category": "common_questions",
+      "question": "What industries has Vasanth worked in?",
+      "answer": "Vasanth has worked across multiple industries: cybersecurity and AI-powered email systems at WERSEC Inc., healthcare and medical AI at WERSEC Inc. (Data Engineer role), telecom and CRM at Cognizant Ltd, and attendance automation systems at Wipro Ltd.",
+      "keywords": ["industries", "cybersecurity", "healthcare", "telecom", "automation"]
+    },
+    {
+      "doc_id": "VP-035",
+      "category": "common_questions",
+      "question": "Has Vasanth worked with RAG systems?",
+      "answer": "Yes, Vasanth has extensive experience with RAG architectures. At WERSEC Inc., he built a RAG pipeline combining FAISS Vector DB and LLMs to improve medical Q&A chatbot accuracy. He uses LangChain, LangGraph, and LlamaIndex with embedding models and vector databases for RAG implementations.",
+      "keywords": ["RAG", "FAISS", "vector database", "LangChain", "chatbot", "retrieval"]
+    },
+    {
+      "doc_id": "VP-036",
+      "category": "common_questions",
+      "question": "Has Vasanth worked on production systems?",
+      "answer": "Yes, Vasanth has significant production experience. At WERSEC, he deployed containerized microservices on GKE with CI/CD pipelines, zero-downtime deployments, and production monitoring. At Cognizant, he built ML APIs serving Oracle CRM dashboards and processed streaming data with Kafka. At Wipro, he deployed a face recognition system that reduced manual tracking time by 90%.",
+      "keywords": ["production", "deployment", "GKE", "CI/CD", "microservices", "live systems"]
+    },
+    {
+      "doc_id": "VP-037",
+      "category": "common_questions",
+      "question": "Does Vasanth have experience with MLOps?",
+      "answer": "Yes, Vasanth has hands-on experience with end-to-end MLOps on Google Cloud, including model training on Vertex AI with GPU support, model versioning, containerized deployment on Kubernetes (GKE), automated CI/CD pipelines using Cloud Build, real-time production monitoring, and continuous model improvement. He uses MLflow and DVC for experiment tracking, dataset versioning, and pipeline lineage documentation.",
+      "keywords": ["MLOps", "model versioning", "CI/CD", "Vertex AI", "MLflow", "DVC", "Kubernetes"]
+    },
+    {
+      "doc_id": "VP-038",
+      "category": "common_questions",
+      "question": "Does Vasanth have experience with containerization?",
+      "answer": "Yes, Vasanth has extensive experience with Docker for containerization and Kubernetes for container orchestration. At WERSEC, he deployed all agents and models as containerized microservices on GKE using Docker, Helm charts, and Artifact Registry. He provisioned infrastructure using Terraform and Helm for infrastructure as code.",
+      "keywords": ["Docker", "Kubernetes", "containerization", "GKE", "Helm", "Terraform"]
+    },
+    {
+      "doc_id": "VP-039",
+      "category": "common_questions",
+      "question": "What is Vasanth's experience with LLMs?",
+      "answer": "Vasanth has worked in development of various LLMs for legal assistance and customer interaction. He has optimized and fine-tuned LLMs and SLMs using techniques like LoRA fine-tuning, RLHF, hyperparameter tuning, and prompt engineering. He has built multi-agent systems using LangChain and LangGraph, and implemented custom prompts and memory chains for document summarization.",
+      "keywords": ["LLM", "fine-tuning", "LoRA", "RLHF", "LangChain", "LangGraph", "prompt engineering"]
+    },
+    {
+      "doc_id": "VP-040",
+      "category": "common_questions",
+      "question": "What is Vasanth's experience with explainable AI?",
+      "answer": "Vasanth has used SHAP and LIME to provide explainable AI outputs at both WERSEC and Cognizant. At WERSEC, he achieved a 25% reduction in false positives for disease prediction models via SHAP-based tuning. At Cognizant, he used SHAP and LIME to provide model explainability to non-technical Oracle CRM users.",
+      "keywords": ["explainable AI", "SHAP", "LIME", "interpretability", "XAI"]
+    },
+    {
+      "doc_id": "VP-041",
+      "category": "common_questions",
+      "question": "What is Vasanth's experience with healthcare AI?",
+      "answer": "At WERSEC Inc. as Data Engineer, Vasanth developed a binary classification model for 30-day readmission risk prediction (98% ROC AUC), integrated FHIR APIs for patient data, applied HIPAA-compliant de-identification, built a medical Q&A chatbot with RAG, performed clinical NER with spaCy linked to UMLS, and automated processing of 100K+ records daily. He reduced document analysis time by 80%.",
+      "keywords": ["healthcare", "medical AI", "HIPAA", "FHIR", "readmission", "clinical NER", "UMLS"]
+    },
+    {
+      "doc_id": "VP-042",
+      "category": "common_questions",
+      "question": "What is Vasanth's experience with telecom systems?",
+      "answer": "At Cognizant, Vasanth worked extensively with telecom systems including Oracle BRM, Siebel CRM, and OSB. He built customer churn prediction models, anomaly detection on network usage data, fraud detection on BRM financial transactions, streaming data processing with Kafka, and reduced manual support case classification time by 65% through NLP integration.",
+      "keywords": ["telecom", "Oracle BRM", "CRM", "churn prediction", "fraud detection", "Kafka"]
+    },
+    {
+      "doc_id": "VP-043",
+      "category": "common_questions",
+      "question": "What is Vasanth's experience with computer vision?",
+      "answer": "At Wipro Ltd, Vasanth designed and deployed a face recognition attendance system using OpenCV, Dlib, and FaceNet. He processed datasets of 1000+ individuals, achieved over 95% recognition accuracy, implemented liveness detection to prevent spoofing, and built a complete admin portal with real-time camera feeds, attendance logging, and CSV report generation.",
+      "keywords": ["computer vision", "face recognition", "OpenCV", "FaceNet", "Dlib", "image processing"]
+    },
+    {
+      "doc_id": "VP-044",
+      "category": "common_questions",
+      "question": "What security and compliance experience does Vasanth have?",
+      "answer": "Vasanth has experience with AI security controls, access management, and auditing frameworks. He has spearheaded AI/ML regulatory audits ensuring compliance with fairness, explainability, and transparency standards. He has implemented HIPAA compliance, GDPR-compliant data storage, CAN-SPAM compliance, PHI masking and encryption, and secure data pipelines with masking, logging, and audit trails.",
+      "keywords": ["security", "compliance", "HIPAA", "GDPR", "CAN-SPAM", "encryption", "audit"]
+    },
+    {
+      "doc_id": "VP-045",
+      "category": "common_questions",
+      "question": "What is Vasanth's complete work history timeline?",
+      "answer": "Vasanth's work history: Wipro Ltd, India as Software Engineer (Python/ML Developer) from June 2020 to September 2021. Cognizant Ltd, India as Python Engineer from September 2021 to August 2023. WERSEC Inc., Illinois as Data Engineer (AI/ML) from October 2024 to September 2025. WERSEC Inc., Illinois as AI/ML Engineer from September 2025 to Present.",
+      "keywords": ["work history", "timeline", "career", "employment history", "dates"]
+    }
+  ]
+}
